@@ -7,12 +7,12 @@ public class Program {
         Dictionnaire dico = null;
         boolean correct;
         var essai = 0;
-        var path = "./dictionnaire.txt";
+
         try (var scanner = new Scanner(System.in)) {
             try {
-                dico = new Dictionnaire(path);
+                dico = Dictionnaire.getInstance();
             } catch (Exception e) {
-                System.err.println("le dictionnaire n'est pas au chemin fourni : " + path);
+                System.err.println("le dictionnaire n'est pas au chemin fourni");
             }
             var tirage = new Tirage(dico.tirerMotAleatoire());
             var shuffledLetters = tirage.Shuffle();

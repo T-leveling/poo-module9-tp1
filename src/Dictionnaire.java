@@ -3,6 +3,15 @@ import java.io.IOException;
 import java.util.*;
 
 public class Dictionnaire {
+
+    private static Dictionnaire instance;
+    private static  String path = "./dictionnaire.txt";
+    public static Dictionnaire getInstance() throws IOException {
+        if (instance == null){
+            instance = new Dictionnaire(path);
+        }
+        return instance;
+    }
     private List<String> mots = new ArrayList<String>();
     private Map<Integer, List<String>> map = new HashMap<>();
 
@@ -36,9 +45,11 @@ public class Dictionnaire {
 
     public List<String> wordsBySizeForTirage(int i, Tirage tirage) {
         var motsValides = new ArrayList<String>();
-        for (String mot : map.get(i)) {
-            if (Tirage.bonneslettres(mot,tirage.getMot())) {
-                motsValides.add(mot);
+        if(map.containsKey(i)) {
+            for (String mot : map.get(i)) {
+                if (Tirage.bonneslettres(mot, tirage.getMot())) {
+                    motsValides.add(mot);
+                }
             }
         }
         return motsValides;
