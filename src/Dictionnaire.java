@@ -1,40 +1,46 @@
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class Dictionnaire {
+    private List<String> mots = new ArrayList<String>();
+    private Map<Integer, List<String>> map = new HashMap<>();
 
+    private Random random = new Random();
 
-    static String tirerMotAleatoire(String[] dico, Random random) {
-        var indexRandom = random.nextInt(dico.length);
-        return dico[indexRandom];
+    public Dictionnaire(String path) throws IOException {
+        var fis = new FileInputStream(path);
+        var scanner = new Scanner(fis);
+
+        while (scanner.hasNext()) {
+            var mot = scanner.nextLine();
+            mots.add(mot);
+
+            var motSize = mot.length();
+            if (!map.containsKey(motSize))
+                map.put(motSize, new ArrayList<>());
+            map.get(motSize).add(mot);
+        }
+        scanner.close();
+        fis.close();
     }
 
-    static String[] InitializedData() throws IOException {
-        var fis = new FileInputStream("./dictionnaire.txt");
-        var scanner = new Scanner(fis);
-        var count = 0;
+    public List<String> getMots() {
+        return mots;
+    }
 
-        while (scanner.hasNext()) {
-            scanner.nextLine();
-            count++;
+    public String tirerMotAleatoire() {
+        var indexRandom = random.nextInt(mots.size());
+        return mots.get(indexRandom);
+    }
+
+    public List<String> wordsBySizeForTirage(int i, Tirage tirage) {
+        var motsValides = new ArrayList<String>();
+        for (String mot : map.get(i)) {
+            if (Tirage.bonneslettres(mot,tirage.getMot())) {
+                motsValides.add(mot);
+            }
         }
-
-        scanner.close();
-        fis.close();
-
-        var dico = new String[count];
-        count = 0;
-
-        fis = new FileInputStream("./dictionnaire.txt");
-        scanner = new Scanner(fis);
-        while (scanner.hasNext()) {
-            dico[count++] = scanner.nextLine();
-        }
-        fis.close();
-        scanner.close();
-        return dico;
+        return motsValides;
     }
 }

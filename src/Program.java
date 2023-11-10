@@ -1,44 +1,48 @@
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Program {
 
-	public static void main(String[] args) throws IOException {
-		var random = new Random();
-		var scanner = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
+        Dictionnaire dico = null;
+        boolean correct;
+        var essai = 0;
+        var path = "./dictionnaire.txt";
+        try (var scanner = new Scanner(System.in)) {
+            try {
+                dico = new Dictionnaire(path);
+            } catch (Exception e) {
+                System.err.println("le dictionnaire n'est pas au chemin fourni : " + path);
+            }
+            var tirage = new Tirage(dico.tirerMotAleatoire());
+            var shuffledLetters = tirage.Shuffle();
 
-		String[] dico = Dictionnaire.InitializedData();
-		String wordCharacters = Dictionnaire.tirerMotAleatoire(dico, random);
-		List<Character> characters = new ArrayList<>();
-		for (char c : wordCharacters.toCharArray()) {
-			characters.add(c);
-		}
-		Collections.shuffle(characters);
-		StringBuilder shuffledWord = new StringBuilder();
-		for (char c : characters) {
-			shuffledWord.append(c);
-		}
+            do {
+                System.out.println("Voila le tirage :" + shuffledLetters);
+                System.out.println("Entrez une proposition");
+                var proposition = scanner.nextLine();
 
-		boolean correct;
+                correct = Tirage.bonneslettres(proposition, shuffledLetters);
+                if (correct && tirage.isIdentique(proposition)) {
+                    System.out.println("GG");
+                    return;
+                } else {
+                    System.out.println("Echec n" + ++essai);
+                }
+            } while (essai < 5);
+            System.out.println("Game Over");
+            System.out.println("le mot était : " + tirage.getMot());
 
-		var essai = 0;
-		do {
-			System.out.println("Voila le tirage :" + shuffledWord);
-			System.out.println("Entrez une proposition");
+            for (int i = tirage.getMot().length(); i > 0; i--) {
+                var list = dico.wordsBySizeForTirage(i, tirage);
+                if (!list.isEmpty()) {
+                    System.out.println("Mots de " + i + " caractères ");
+                    for (String s : list) {
+                        System.out.println(s);
+                    }
+                }
+            }
 
-			var proposition = scanner.nextLine();
-			correct = Triage.bonneslettres(proposition, shuffledWord.toString());
-			if (correct && Triage.isIdentique(wordCharacters.toString(), proposition)) {
-				System.out.println("GG");
-				return;
-			} else {
-				System.out.println("Echec n" + ++essai);
-			}
-		} while (essai < 5);
-		System.out.println("Game Over");
-		System.out.println("le mot était : "+ wordCharacters);
-
-	}
-
+        }
+    }
 }
